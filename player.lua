@@ -34,7 +34,7 @@ function Player:init(game)
   self.dashKnockback = 40
   self.dashCharge = 0
   self.dashChargeDecreaseSpeed = 10
-  self.dashChargeIncreaseSpeed = 5
+  self.dashChargeIncreaseSpeed = 10
 
   self.game.world:add(self, self.position.x, self.position.y, self.width, self.height)
 end

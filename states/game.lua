@@ -2,7 +2,9 @@ local bump = require "libs.bump.bump"
 
 require "crystal"
 require "player"
+
 require "enemy_base"
+require "enemy_small"
 
 Game = {}
 
@@ -17,9 +19,9 @@ function Game:enter (previous)
 
   self.enemies = {}
   for i=1,10 do
-    table.insert(self.enemies, EnemyBase(self, Vector(50 + math.random(40)-20, 50 + math.random(40)-20)))
-    table.insert(self.enemies, EnemyBase(self, Vector(500 + math.random(40)-20, 100 + math.random(40)-20)))
-    table.insert(self.enemies, EnemyBase(self, Vector(400 + math.random(40)-20, 550 + math.random(40)-20)))
+    table.insert(self.enemies, EnemySmall(self, Vector(50 + math.random(40)-20, 50 + math.random(40)-20)))
+    table.insert(self.enemies, EnemySmall(self, Vector(500 + math.random(40)-20, 100 + math.random(40)-20)))
+    table.insert(self.enemies, EnemySmall(self, Vector(400 + math.random(40)-20, 550 + math.random(40)-20)))
   end
 end
 
@@ -34,6 +36,8 @@ function Game:mousepressed(x, y, button)
 end
 
 function Game:update(dt)
+  Timer.update(dt)
+
   self.crystal:update(dt)
   self.player:update(dt)
 
