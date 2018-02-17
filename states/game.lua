@@ -60,3 +60,7 @@ function Game:removeEnemy(enemy)
     end
   end
 end
+
+function Game:gameOver()
+  love.event.quit( )
+end
