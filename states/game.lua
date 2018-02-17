@@ -23,6 +23,14 @@ function Game:enter (previous)
   end
 end
 
+function Game:mousepressed(x, y, button)
+  if button == 1 then
+    self.player:attack(x, y)
+  elseif button == 2 then
+    -- Right mouse button pressed
+  end
+end
+
 function Game:update(dt)
   self.crystal:update(dt)
   self.player:update(dt)

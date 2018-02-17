@@ -3,6 +3,7 @@ Player = Class{}
 Player.width, Player.height = 16, 16
 Player.defaultMaxSpeed = 125
 Player.acceleration = 400
+Player.defaultAttackTime = 0.2
 
 function Player:init(game)
   self.game = game
@@ -17,15 +18,37 @@ function Player:init(game)
 
   self.currentSpeed = 0
 
+  -- Attack properties
+  self.attacking = false
+  self.attackType = 0
+  self.attackTime = Player.defaultAttackTime -- Time to complete the attack (in seconds)
+  self.currentAttackTime = 0 -- Time since the beginning of the current attack
+
   self.game.world:add(self, self.position.x, self.position.y, self.width, self.height)
 end
 
 function Player:update(dt)
   self:move(dt)
+
+  if self.attacking then
+    self.currentAttackTime = self.currentAttackTime + dt
+    if self.currentAttackTime >= self.attackTime then
+      self.attacking = false
+    end
+  end
 end
 
 function Player:draw()
   love.graphics.setColor(0, 0, 0)
+
+  if self.attacking then
+    if self.attackType == 0 then
+    love.graphics.setColor(255, 0, 0)
+    else
+    love.graphics.setColor(0, 255, 0)
+    end
+  end
+
   love.graphics.rectangle("line", self.position.x, self.position.y, self.width, self.height)
 end
 
@@ -77,5 +100,43 @@ function Player:move(dt)
     end
 
     self.currentSpeed = 0
+  end
+end
+
+function Player:attack(mouseX, mouseY)
+  if self.attackType == 0 then
+    self.attackType = 1
+  else
+    self.attackType = 0
+  end
+
+  self.attacking = true
+  self.currentAttackTime = 0
+
+  -- Attack collision
+  local attackRange = 50
+  local attackPrecision = 5
+  local attackAngle = math.rad(110)
+  local knockback = 20
+
+  local filter = function(item)
+    if item.type ~= 'enemy' then return false end
+    return true
+  end
+
+  local centerPos = self.position + Vector(self.width/2, self.height/2)
+  local v = (Vector(mouseX, mouseY) - centerPos):normalized():rotated(-attackAngle/2)
+
+  for i=1,attackPrecision do
+    -- Raycast
+    local endRay = centerPos + v * attackRange
+    local items, len = self.game.world:querySegment(centerPos.x, centerPos.y, endRay.x, endRay.y, filter)
+    for k,enemy in pairs(items) do
+      enemy.position = enemy.position + (enemy.position - centerPos):normalized() * knockback
+      self.game.world:update(enemy, enemy.position.x, enemy.position.y)
+    end
+
+    -- Rotate vector
+    v = v:rotated(attackAngle / attackPrecision)
   end
 end
