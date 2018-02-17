@@ -24,6 +24,14 @@ function Player:init(game)
   self.attackTime = Player.defaultAttackTime -- Time to complete the attack (in seconds)
   self.currentAttackTime = 0 -- Time since the beginning of the current attack
 
+  self.attackRange = 50
+  self.attackPrecision = 5
+  self.attackAngle = math.rad(110)
+  self.knockback = 20
+
+  -- Dash properties
+  self.dashRange = 100
+
   self.game.world:add(self, self.position.x, self.position.y, self.width, self.height)
 end
 
@@ -68,7 +76,7 @@ function Player:move(dt)
     self.currentSpeed = self.currentSpeed + self.acceleration * dt
     if self.currentSpeed > self.maxSpeed then self.currentSpeed = self.maxSpeed end
 
-    local filter = function(item, other)
+    local playerMoveFilter = function(item, other)
       if other.type == 'crystal' then return 'slide'
       elseif other.type == 'enemy' then return 'cross'
       else return nil
@@ -76,14 +84,14 @@ function Player:move(dt)
     end
 
     local goalPos = self.position + direction * self.currentSpeed * dt -- update position
-    local actualX, actualY, cols, len = self.game.world:move(self, goalPos.x, goalPos.y, filter)
+    local actualX, actualY, cols, len = self.game.world:move(self, goalPos.x, goalPos.y, playerMoveFilter)
 
     for k,collision in pairs(cols) do
       if collision.other.type ~= 'enemy' then break end
 
       local normal = (collision.other.position - self.position):normalized()
 
-      collision.other.position = collision.other.position + (len+1) * normal
+      collision.other.position = collision.other.position + (goalPos:dist(self.position)) * normal
       self.game.world:update(collision.other, collision.other.position.x, collision.other.position.y)
     end
 
@@ -114,10 +122,6 @@ function Player:attack(mouseX, mouseY)
   self.currentAttackTime = 0
 
   -- Attack collision
-  local attackRange = 50
-  local attackPrecision = 5
-  local attackAngle = math.rad(110)
-  local knockback = 20
 
   local filter = function(item)
     if item.type ~= 'enemy' then return false end
@@ -125,21 +129,54 @@ function Player:attack(mouseX, mouseY)
   end
 
   local centerPos = self.position + Vector(self.width/2, self.height/2)
-  local v = (Vector(mouseX, mouseY) - centerPos):normalized():rotated(-attackAngle/2)
+  local v = (Vector(mouseX, mouseY) - centerPos):normalized():rotated(-self.attackAngle/2)
 
-  for i=1,attackPrecision do
+  for i=1,self.attackPrecision do
     -- Raycast
-    local endRay = centerPos + v * attackRange
+    local endRay = centerPos + v * self.attackRange
     local items, len = self.game.world:querySegment(centerPos.x, centerPos.y, endRay.x, endRay.y, filter)
     for k,enemy in pairs(items) do
       if enemy:loseHp(1) then
 	-- if enemy is not killed
-	enemy.position = enemy.position + (enemy.position - centerPos):normalized() * knockback
+	enemy.position = enemy.position + (enemy.position - centerPos):normalized() * self.knockback
 	self.game.world:update(enemy, enemy.position.x, enemy.position.y)
       end
     end
 
     -- Rotate vector
-    v = v:rotated(attackAngle / attackPrecision)
+    v = v:rotated(self.attackAngle / self.attackPrecision)
   end
+end
+
+function Player:dash(mouseX, mouseY)
+  local centerPos = self.position + Vector(self.width/2, self.height/2)
+  local dashDirection = (Vector(mouseX, mouseY) - centerPos):normalized()
+  local goalPos = centerPos + dashDirection * self.dashRange
+
+  local dashKnockback = 40
+
+  local playerDashFilter = function(item, other)
+    if other.type == 'crystal' then return 'touch'
+    elseif other.type == 'enemy' then return 'cross'
+    else return nil
+    end
+  end
+
+  local actualX, actualY, cols, len = self.game.world:move(self, goalPos.x, goalPos.y, playerDashFilter)
+
+  for k,collision in pairs(cols) do
+    if collision.other.type ~= 'enemy' then break end
+
+    -- Push enemies 90° or -90° from the dash
+    local mult = 1
+    if math.random(0, 1) == 1 then
+      mult = -1
+    end
+    local normal = dashDirection:rotated(math.rad(mult * 90))
+
+    collision.other.position = collision.other.position + dashKnockback * normal
+    self.game.world:update(collision.other, collision.other.position.x, collision.other.position.y)
+  end
+
+  self.position = Vector(actualX, actualY)
 end

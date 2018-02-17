@@ -25,9 +25,11 @@ end
 
 function Game:mousepressed(x, y, button)
   if button == 1 then
+    -- Left mouse button pressed
     self.player:attack(x, y)
   elseif button == 2 then
     -- Right mouse button pressed
+    self.player:dash(x, y)
   end
 end
 
