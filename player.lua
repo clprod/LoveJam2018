@@ -24,6 +24,11 @@ function Player:init(game)
   self.attackTime = Player.defaultAttackTime -- Time to complete the attack (in seconds)
   self.currentAttackTime = 0 -- Time since the beginning of the current attack
 
+  self.attackRange = 50
+  self.attackPrecision = 5
+  self.attackAngle = math.rad(110)
+  self.knockback = 20
+
   self.game.world:add(self, self.position.x, self.position.y, self.width, self.height)
 end
 
@@ -114,10 +119,6 @@ function Player:attack(mouseX, mouseY)
   self.currentAttackTime = 0
 
   -- Attack collision
-  local attackRange = 50
-  local attackPrecision = 5
-  local attackAngle = math.rad(110)
-  local knockback = 20
 
   local filter = function(item)
     if item.type ~= 'enemy' then return false end
@@ -125,11 +126,11 @@ function Player:attack(mouseX, mouseY)
   end
 
   local centerPos = self.position + Vector(self.width/2, self.height/2)
-  local v = (Vector(mouseX, mouseY) - centerPos):normalized():rotated(-attackAngle/2)
+  local v = (Vector(mouseX, mouseY) - centerPos):normalized():rotated(-self.attackAngle/2)
 
-  for i=1,attackPrecision do
+  for i=1,self.attackPrecision do
     -- Raycast
-    local endRay = centerPos + v * attackRange
+    local endRay = centerPos + v * self.attackRange
     local items, len = self.game.world:querySegment(centerPos.x, centerPos.y, endRay.x, endRay.y, filter)
     for k,enemy in pairs(items) do
       enemy.health = enemy.health - 1
@@ -137,11 +138,11 @@ function Player:attack(mouseX, mouseY)
         self.game:removeEnemy(enemy)
         break
       end
-      enemy.position = enemy.position + (enemy.position - centerPos):normalized() * knockback
+      enemy.position = enemy.position + (enemy.position - centerPos):normalized() * self.knockback
       self.game.world:update(enemy, enemy.position.x, enemy.position.y)
     end
 
     -- Rotate vector
-    v = v:rotated(attackAngle / attackPrecision)
+    v = v:rotated(self.attackAngle / self.attackPrecision)
   end
 end
