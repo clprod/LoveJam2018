@@ -48,3 +48,13 @@ function Game:draw()
     enemy:draw()
   end
 end
+
+function Game:removeEnemy(enemy)
+  self.world:remove(enemy)
+  for i,v in ipairs(self.enemies) do
+    if v == enemy then
+      table.remove(self.enemies, i)
+      return
+    end
+  end
+end

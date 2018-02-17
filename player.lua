@@ -132,6 +132,11 @@ function Player:attack(mouseX, mouseY)
     local endRay = centerPos + v * attackRange
     local items, len = self.game.world:querySegment(centerPos.x, centerPos.y, endRay.x, endRay.y, filter)
     for k,enemy in pairs(items) do
+      enemy.health = enemy.health - 1
+      if enemy.health <= 0 then
+        self.game:removeEnemy(enemy)
+        break
+      end
       enemy.position = enemy.position + (enemy.position - centerPos):normalized() * knockback
       self.game.world:update(enemy, enemy.position.x, enemy.position.y)
     end

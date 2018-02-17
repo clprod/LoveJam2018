@@ -20,6 +20,7 @@ function EnemyBase:init(game, position)
   self.game.world:add(self, self.position.x, self.position.y, self.width, self.height)
 
   self.isAttacking = false
+  self.health = 2
 end
 
 function EnemyBase:update(dt)
