@@ -6,6 +6,7 @@ Player.acceleration = 400
 
 function Player:init(game)
   self.game = game
+  self.type = 'player'
 
   self.width = Player.width
   self.height = Player.height
@@ -44,8 +45,25 @@ function Player:move(dt)
     self.currentSpeed = self.currentSpeed + self.acceleration * dt
     if self.currentSpeed > self.maxSpeed then self.currentSpeed = self.maxSpeed end
 
-    self.position = self.position + direction * self.currentSpeed * dt -- update position
-    local actualX, actualY, cols, len = self.game.world:move(self, self.position.x, self.position.y)
+    local filter = function(item, other)
+      if other.type == 'crystal' then return 'slide'
+      elseif other.type == 'enemy' then return 'cross'
+      else return nil
+      end
+    end
+
+    local goalPos = self.position + direction * self.currentSpeed * dt -- update position
+    local actualX, actualY, cols, len = self.game.world:move(self, goalPos.x, goalPos.y, filter)
+
+    for k,collision in pairs(cols) do
+      if collision.other.type ~= 'enemy' then break end
+
+      local normal = (collision.other.position - self.position):normalized()
+
+      collision.other.position = collision.other.position + (len+1) * normal
+      self.game.world:update(collision.other, collision.other.position.x, collision.other.position.y)
+    end
+
     self.position = Vector(actualX, actualY)
 
     if direction.x > 0 then

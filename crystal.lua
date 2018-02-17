@@ -4,6 +4,8 @@ Crystal.width, Crystal.height = 50, 50
 Crystal.name = "Crystal"
 
 function Crystal:init(game)
+  self.type = 'crystal'
+
   game.world:add(self, love.graphics.getWidth()/2 - Crystal.width/2, love.graphics.getHeight()/2 - Crystal.height/2, Crystal.width, Crystal.height)
 end
 
