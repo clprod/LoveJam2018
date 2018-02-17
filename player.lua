@@ -16,7 +16,7 @@ function Player:init(game)
   self.position = Vector(love.graphics.getWidth()/2 + 50, love.graphics.getHeight()/2)
 
   self.currentSpeed = 0
-  
+
   self.game.world:add(self, self.position.x, self.position.y, self.width, self.height)
 end
 

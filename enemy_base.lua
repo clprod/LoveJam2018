@@ -48,8 +48,8 @@ function EnemyBase:move(dt)
     -- prints "Collision with A"
     for i=1,len do -- If more than one simultaneous collision, they are sorted out by proximity
       local col = cols[i]
-      if col.other.name == 'Crystal' then
-        print(("Collision with %s."):format(col.other.name))
+      if col.other.type == 'crystal' then
+        print(("Collision with %s."):format(col.other.type))
       end
     end
 

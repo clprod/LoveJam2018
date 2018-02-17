@@ -1,7 +1,6 @@
 Crystal = Class{}
 
 Crystal.width, Crystal.height = 50, 50
-Crystal.name = "Crystal"
 
 function Crystal:init(game)
   self.type = 'crystal'
