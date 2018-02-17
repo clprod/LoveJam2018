@@ -18,15 +18,27 @@ function EnemyBase:init(game, position)
   self.currentSpeed = 0
 
   self.game.world:add(self, self.position.x, self.position.y, self.width, self.height)
+
+  self.isAttacking = false
 end
 
 function EnemyBase:update(dt)
   self:move(dt)
+  Timer.update(dt)
 end
 
 function EnemyBase:draw()
   love.graphics.setColor(0, 0, 0)
   love.graphics.rectangle("line", self.position.x, self.position.y, self.width, self.height)
+end
+
+function EnemyBase:attackCristal(attackRate, attackDammage)
+  self.isAttacking = true
+  Timer.after(attackRate,function()
+		self.game.crystal:loseHp(attackDammage)
+		self.isAttacking = false
+  end)
+
 end
 
 function EnemyBase:move(dt)
@@ -35,7 +47,7 @@ function EnemyBase:move(dt)
 
   if direction.x ~= 0 or direction.y ~= 0 then
     if self.currentSpeed == 0 then
-    -- EnemyBase just started moving
+      -- EnemyBase just started moving
     end
 
     self.currentSpeed = self.currentSpeed + self.acceleration * dt
@@ -49,7 +61,9 @@ function EnemyBase:move(dt)
     for i=1,len do -- If more than one simultaneous collision, they are sorted out by proximity
       local col = cols[i]
       if col.other.type == 'crystal' then
-        print(("Collision with %s."):format(col.other.type))
+	if not self.isAttacking then
+	  self:attackCristal(1,1)
+	end
       end
     end
 
