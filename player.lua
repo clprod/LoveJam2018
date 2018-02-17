@@ -31,6 +31,10 @@ function Player:init(game)
 
   -- Dash properties
   self.dashRange = 100
+  self.dashKnockback = 40
+  self.dashCharge = 0
+  self.dashChargeDecreaseSpeed = 10
+  self.dashChargeIncreaseSpeed = 5
 
   self.game.world:add(self, self.position.x, self.position.y, self.width, self.height)
 end
@@ -38,12 +42,17 @@ end
 function Player:update(dt)
   self:move(dt)
 
+  -- Attack update
   if self.attacking then
     self.currentAttackTime = self.currentAttackTime + dt
     if self.currentAttackTime >= self.attackTime then
       self.attacking = false
     end
   end
+
+  -- Dash update
+  self.dashCharge = self.dashCharge - self.dashChargeDecreaseSpeed * dt
+  if self.dashCharge < 0 then self.dashCharge = 0 end
 end
 
 function Player:draw()
@@ -137,10 +146,13 @@ function Player:attack(mouseX, mouseY)
     local items, len = self.game.world:querySegment(centerPos.x, centerPos.y, endRay.x, endRay.y, filter)
     for k,enemy in pairs(items) do
       if enemy:loseHp(1) then
-	-- if enemy is not killed
-	enemy.position = enemy.position + (enemy.position - centerPos):normalized() * self.knockback
-	self.game.world:update(enemy, enemy.position.x, enemy.position.y)
+        -- if enemy is not killed
+        enemy.position = enemy.position + (enemy.position - centerPos):normalized() * self.knockback
+        self.game.world:update(enemy, enemy.position.x, enemy.position.y)
       end
+
+      self.dashCharge = self.dashCharge + self.dashChargeIncreaseSpeed
+      if self.dashCharge > 100 then self.dashCharge = 100 end
     end
 
     -- Rotate vector
@@ -149,11 +161,14 @@ function Player:attack(mouseX, mouseY)
 end
 
 function Player:dash(mouseX, mouseY)
+  -- Can't dash if less than 90% charge
+  if self.dashCharge < 90 then
+    return
+  end
+
   local centerPos = self.position + Vector(self.width/2, self.height/2)
   local dashDirection = (Vector(mouseX, mouseY) - centerPos):normalized()
   local goalPos = centerPos + dashDirection * self.dashRange
-
-  local dashKnockback = 40
 
   local playerDashFilter = function(item, other)
     if other.type == 'crystal' then return 'touch'
@@ -174,7 +189,7 @@ function Player:dash(mouseX, mouseY)
     end
     local normal = dashDirection:rotated(math.rad(mult * 90))
 
-    collision.other.position = collision.other.position + dashKnockback * normal
+    collision.other.position = collision.other.position + self.dashKnockback * normal
     self.game.world:update(collision.other, collision.other.position.x, collision.other.position.y)
   end
 
