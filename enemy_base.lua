@@ -21,6 +21,7 @@ function EnemyBase:init(game, position)
 
   self.isAttacking = false
   self.health = 2
+
 end
 
 function EnemyBase:update(dt)
@@ -40,6 +41,16 @@ function EnemyBase:attackCristal(attackRate, attackDammage)
 		self.isAttacking = false
   end)
 
+end
+
+-- return false is enemy is killed
+function EnemyBase:loseHp(hpNb)
+  self.health = self.health - hpNb
+  if self.health <= 0 then 
+    self.game:removeEnemy(self)
+    return false
+  end
+  return true
 end
 
 function EnemyBase:move(dt)
