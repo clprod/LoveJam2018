@@ -11,6 +11,9 @@ Game = {}
 Game.waveNumber = 2
 
 function Game:enter (previous)
+  love.mouse.setGrabbed(true)
+  love.mouse.setCursor(love.mouse.newCursor("assets/cursor/cursor2.png", 0, 0))
+
   self.world = bump.newWorld()
 
   self.camera = Camera(love.graphics.getWidth()/2, love.graphics.getHeight()/2, 1, 0)
@@ -25,6 +28,12 @@ function Game:enter (previous)
   self.gameEnded = false
 
   self:nextWave()
+end
+
+function Game:keypressed(key, scancode, isrepeat)
+  if key == "escape" then
+    love.event.quit( )
+  end
 end
 
 function Game:mousepressed(x, y, button)
