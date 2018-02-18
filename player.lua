@@ -202,7 +202,8 @@ function Player:attack(mouseX, mouseY)
   self.swordRotation = swordDir:angleTo(mouseDir)
   self.swordPosition = swordDir * 8
 
-  self.game:startScreenshake()
+  self.game:startScreenshake(0.2, 4, mouseDir)
+  self.game:startCameraZoom(0.2, 1.05)
 end
 
 function Player:dash(mouseX, mouseY)
@@ -248,5 +249,6 @@ function Player:dash(mouseX, mouseY)
 
   self.dashCharge = self.dashCharge - 30
 
-  self.game:startScreenshake()
+  self.game:startScreenshake(0.5, 5, dashDirection)
+  self.game:startCameraZoom(0.5, 1.05)
 end

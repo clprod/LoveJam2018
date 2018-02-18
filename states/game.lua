@@ -116,17 +116,31 @@ function Game:removeEnemy(enemy)
   end
 end
 
-function Game:startScreenshake(duration, intensity)
+function Game:startScreenshake(duration, intensity, direction)
   duration = duration or 0.1
   intensity = intensity or 2
-  -- shake the camera for one second
+
   local orig_x, orig_y = self.camera:position()
-  Timer.during(duration, function()
-    self.camera:lookAt(orig_x + math.random(-intensity, intensity), orig_y + math.random(-intensity, intensity))
-  end, function()
-    -- reset camera position
-    self.camera:lookAt(orig_x, orig_y)
-  end)
+  if direction == nil then
+    Timer.during(duration, function()
+      self.camera:lookAt(orig_x + math.random(-intensity, intensity), orig_y + math.random(-intensity, intensity))
+    end, function()
+      -- reset camera position
+      self.camera:lookAt(orig_x, orig_y)
+    end)
+  else
+    direction = direction:normalized()
+    self.camera:move(direction.x * intensity, direction.y * intensity)
+    Timer.tween(duration, self.camera, {x = orig_x, y = orig_y}, "out-cubic")
+  end
+end
+
+function Game:startCameraZoom(duration, zoomLevel)
+  duration = duration or 0.1
+  zoomLevel = zoomLevel or 1.1
+
+  self.camera.scale = zoomLevel
+  Timer.tween(duration, self.camera, {scale = 1}, "out-cubic")
 end
 
 function Game:gameOver()
