@@ -13,8 +13,7 @@ Game.waveNumber = 2
 function Game:enter (previous)
   self.world = bump.newWorld()
 
-  -- camera looking at (100,100) with zoom 1 and rotate by 0 deg
-  self.camera = Camera(100,100, 1, 0)
+  self.camera = Camera(love.graphics.getWidth()/2, love.graphics.getHeight()/2, 1, 0)
 
   self.player = Player(self)
   self.crystal = Crystal(self)
@@ -55,12 +54,16 @@ function Game:update(dt)
 end
 
 function Game:draw()
+  self.camera:attach()
+
   self.crystal:draw()
   self.player:draw()
 
   for k,enemy in pairs(self.enemies) do
     enemy:draw()
   end
+
+  self.camera:detach()
 end
 
 function Game:nextWave()
@@ -111,6 +114,19 @@ function Game:removeEnemy(enemy)
       return
     end
   end
+end
+
+function Game:startScreenshake(duration, intensity)
+  duration = duration or 0.1
+  intensity = intensity or 2
+  -- shake the camera for one second
+  local orig_x, orig_y = self.camera:position()
+  Timer.during(duration, function()
+    self.camera:lookAt(orig_x + math.random(-intensity, intensity), orig_y + math.random(-intensity, intensity))
+  end, function()
+    -- reset camera position
+    self.camera:lookAt(orig_x, orig_y)
+  end)
 end
 
 function Game:gameOver()
