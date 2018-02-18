@@ -38,7 +38,7 @@ function Player:init(game)
   self.dashRange = 100
   self.dashKnockback = 40
   self.dashCharge = 0
-  self.dashChargeDecreaseSpeed = 10
+  self.dashChargeDecreaseSpeed = 5
   self.dashChargeIncreaseSpeed = 10
 
   self.dashPosition = Vector()
@@ -80,6 +80,7 @@ function Player:draw()
   love.graphics.rectangle("line", self.position.x, self.position.y, self.width, self.height)
 
   if self.dashDrawTime > 0 then
+    love.graphics.setColor(255, 255, 255)
     love.graphics.draw(dashImage, self.dashPosition.x, self.dashPosition.y, self.dashRotation, 1, 1, Player.trailWidth/2, 0)
   end
 end
@@ -177,7 +178,7 @@ end
 
 function Player:dash(mouseX, mouseY)
   -- Can't dash if less than 90% charge
-  if self.dashCharge < 90 then
+  if self.dashCharge < 60 then
     return
   end
 
@@ -197,15 +198,17 @@ function Player:dash(mouseX, mouseY)
   for k,collision in pairs(cols) do
     if collision.other.type ~= 'enemy' then break end
 
-    -- Push enemies 90° or -90° from the dash
-    local mult = 1
-    if math.random(0, 1) == 1 then
-      mult = -1
-    end
-    local normal = dashDirection:rotated(math.rad(mult * 90))
+    if collision.other:loseHp(1) then
+      -- Push enemies 90° or -90° from the dash
+      local mult = 1
+      if math.random(0, 1) == 1 then
+        mult = -1
+      end
+      local normal = dashDirection:rotated(math.rad(mult * 90))
 
-    collision.other.position = collision.other.position + self.dashKnockback * normal
-    self.game.world:update(collision.other, collision.other.position.x, collision.other.position.y)
+      collision.other.position = collision.other.position + self.dashKnockback * normal
+      self.game.world:update(collision.other, collision.other.position.x, collision.other.position.y)
+    end
   end
 
   self.position = Vector(actualX, actualY)
@@ -213,4 +216,6 @@ function Player:dash(mouseX, mouseY)
   self.dashRotation = dashDirection:angleTo(Vector(0, -1))
   self.dashPosition = self.position
   self.dashDrawTime = Player.dashDrawMaxTime
+
+  self.dashCharge = self.dashCharge - 30
 end
