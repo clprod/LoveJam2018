@@ -5,6 +5,11 @@ Player.defaultMaxSpeed = 125
 Player.acceleration = 400
 Player.defaultAttackTime = 0.2
 
+Player.dashDrawMaxTime = 0.15
+Player.trailWidth = 22
+
+local dashImage = love.graphics.newImage("assets/textures/dash_trail.png")
+
 function Player:init(game)
   self.game = game
   self.type = 'player'
@@ -36,6 +41,10 @@ function Player:init(game)
   self.dashChargeDecreaseSpeed = 10
   self.dashChargeIncreaseSpeed = 10
 
+  self.dashPosition = Vector()
+  self.dashRotation = 0
+  self.dashDrawTime = 0
+
   self.game.world:add(self, self.position.x, self.position.y, self.width, self.height)
 end
 
@@ -53,6 +62,8 @@ function Player:update(dt)
   -- Dash update
   self.dashCharge = self.dashCharge - self.dashChargeDecreaseSpeed * dt
   if self.dashCharge < 0 then self.dashCharge = 0 end
+
+  self.dashDrawTime = self.dashDrawTime - dt
 end
 
 function Player:draw()
@@ -67,6 +78,10 @@ function Player:draw()
   end
 
   love.graphics.rectangle("line", self.position.x, self.position.y, self.width, self.height)
+
+  if self.dashDrawTime > 0 then
+    love.graphics.draw(dashImage, self.dashPosition.x, self.dashPosition.y, self.dashRotation, 1, 1, Player.trailWidth/2, 0)
+  end
 end
 
 function Player:move(dt)
@@ -194,4 +209,8 @@ function Player:dash(mouseX, mouseY)
   end
 
   self.position = Vector(actualX, actualY)
+
+  self.dashRotation = dashDirection:angleTo(Vector(0, -1))
+  self.dashPosition = self.position
+  self.dashDrawTime = Player.dashDrawMaxTime
 end
