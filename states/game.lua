@@ -8,6 +8,8 @@ require "enemy_small"
 
 Game = {}
 
+Game.waveNumber = 2
+
 function Game:enter (previous)
   self.world = bump.newWorld()
 
@@ -21,6 +23,7 @@ function Game:enter (previous)
 
   self.currentWaveId = -1
   self.currentWaveTime = 0
+  self.gameEnded = false
 
   self:nextWave()
 end
@@ -45,8 +48,10 @@ function Game:update(dt)
     enemy:update(dt)
   end
 
-  self.currentWaveTime = self.currentWaveTime + dt
-  self:checkEnemySpawn()
+  if not self.gameEnded then
+    self.currentWaveTime = self.currentWaveTime + dt
+    self:checkEnemySpawn()
+  end
 end
 
 function Game:draw()
@@ -62,6 +67,12 @@ function Game:nextWave()
   self.currentWaveId = self.currentWaveId + 1
   self.currentWaveTime = 0
 
+  if self.currentWaveId >= Game.waveNumber then
+    self.gameEnded = true
+    -- Game finished : player WON
+    return
+  end
+
   self:loadWave("waves/wave" .. self.currentWaveId .. ".lua")
 end
 
@@ -71,12 +82,21 @@ function Game:loadWave(filename)
 end
 
 function Game:checkEnemySpawn()
-  if #self.spawn <= 0 then return end -- no more enemies to spawn during the wave
+  if #self.spawn <= 0 then  -- no more enemies to spawn during the wave
+    if #self.enemies == 0 then -- And no more enemies in the game -> Start next wave
+      self:nextWave()
+    end
+    return
+  end
 
   local spawn = self.spawn[1]
   if spawn.time <= self.currentWaveTime then
     for i=1,spawn.number do
-      table.insert(self.enemies, EnemySmall(self, spawn.pos))
+      if spawn.type == 0 then
+        table.insert(self.enemies, EnemySmall(self, spawn.pos))
+      else
+        -- Other enemy types
+      end
     end
 
     table.remove(self.spawn, 1)
