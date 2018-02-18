@@ -9,6 +9,7 @@ Player.dashDrawMaxTime = 0.15
 Player.trailWidth = 22
 
 local dashImage = love.graphics.newImage("assets/textures/dash_trail.png")
+local swordImage = love.graphics.newImage("assets/textures/sword.png")
 
 function Player:init(game)
   self.game = game
@@ -34,6 +35,10 @@ function Player:init(game)
   self.attackAngle = math.rad(110)
   self.knockback = 20
 
+  -- Attack visuals
+  self.swordPosition = Vector()
+  self.swordRotation = 0
+
   -- Dash properties
   self.dashRange = 100
   self.dashKnockback = 40
@@ -41,6 +46,7 @@ function Player:init(game)
   self.dashChargeDecreaseSpeed = 5
   self.dashChargeIncreaseSpeed = 10
 
+  -- Dash visuals
   self.dashPosition = Vector()
   self.dashRotation = 0
   self.dashDrawTime = 0
@@ -68,19 +74,18 @@ end
 
 function Player:draw()
   love.graphics.setColor(0, 0, 0)
-
-  if self.attacking then
-    if self.attackType == 0 then
-    love.graphics.setColor(255, 0, 0)
-    else
-    love.graphics.setColor(0, 255, 0)
-    end
-  end
-
   love.graphics.rectangle("line", self.position.x, self.position.y, self.width, self.height)
 
+  love.graphics.setColor(255, 255, 255)
+
+  if self.attacking then
+    local centerPos = self.position + Vector(self.width/2, self.height/2)
+    local pos = centerPos + self.swordPosition
+    local mouseDir = (Vector(love.mouse.getX(), love.mouse.getY()) - centerPos):normalized()
+    love.graphics.draw(swordImage, pos.x, pos.y, mouseDir:angleTo(Vector(0, -1)) + self.swordRotation, 1, 1, 8/2, 50)
+  end
+
   if self.dashDrawTime > 0 then
-    love.graphics.setColor(255, 255, 255)
     love.graphics.draw(dashImage, self.dashPosition.x, self.dashPosition.y, self.dashRotation, 1, 1, Player.trailWidth/2, 0)
   end
 end
@@ -174,6 +179,16 @@ function Player:attack(mouseX, mouseY)
     -- Rotate vector
     v = v:rotated(self.attackAngle / self.attackPrecision)
   end
+
+  local mouseDir = (Vector(mouseX, mouseY) - centerPos):normalized()
+  local swordDir = nil
+  if self.attackType == 0 then
+    swordDir = v
+  else
+    swordDir = v:rotated(-self.attackAngle)
+  end
+  self.swordRotation = swordDir:angleTo(mouseDir)
+  self.swordPosition = swordDir * 8
 end
 
 function Player:dash(mouseX, mouseY)
