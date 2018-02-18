@@ -18,11 +18,11 @@ function Game:enter (previous)
   self.crystal = Crystal(self)
 
   self.enemies = {}
-  for i=1,10 do
-    table.insert(self.enemies, EnemySmall(self, Vector(50 + math.random(40)-20, 50 + math.random(40)-20)))
-    table.insert(self.enemies, EnemySmall(self, Vector(500 + math.random(40)-20, 100 + math.random(40)-20)))
-    table.insert(self.enemies, EnemySmall(self, Vector(400 + math.random(40)-20, 550 + math.random(40)-20)))
-  end
+
+  self.currentWaveId = -1
+  self.currentWaveTime = 0
+
+  self:nextWave()
 end
 
 function Game:mousepressed(x, y, button)
@@ -44,6 +44,9 @@ function Game:update(dt)
   for k,enemy in pairs(self.enemies) do
     enemy:update(dt)
   end
+
+  self.currentWaveTime = self.currentWaveTime + dt
+  self:checkEnemySpawn()
 end
 
 function Game:draw()
@@ -52,6 +55,31 @@ function Game:draw()
 
   for k,enemy in pairs(self.enemies) do
     enemy:draw()
+  end
+end
+
+function Game:nextWave()
+  self.currentWaveId = self.currentWaveId + 1
+  self.currentWaveTime = 0
+
+  self:loadWave("waves/wave" .. self.currentWaveId .. ".lua")
+end
+
+function Game:loadWave(filename)
+  local wave = love.filesystem.load(filename)()
+  self.spawn = wave.spawn
+end
+
+function Game:checkEnemySpawn()
+  if #self.spawn <= 0 then return end -- no more enemies to spawn during the wave
+
+  local spawn = self.spawn[1]
+  if spawn.time <= self.currentWaveTime then
+    for i=1,spawn.number do
+      table.insert(self.enemies, EnemySmall(self, spawn.pos))
+    end
+
+    table.remove(self.spawn, 1)
   end
 end
 
