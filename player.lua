@@ -121,6 +121,7 @@ function Player:move(dt)
     local playerMoveFilter = function(item, other)
       if other.type == 'crystal' then return 'slide'
       elseif other.type == 'enemy' then return 'cross'
+      elseif other.type == 'border' then return 'slide'
       else return nil
       end
     end
@@ -219,6 +220,7 @@ function Player:dash(mouseX, mouseY)
   local playerDashFilter = function(item, other)
     if other.type == 'crystal' then return 'touch'
     elseif other.type == 'enemy' then return 'cross'
+    elseif other.type == 'border' then return 'slide'
     else return nil
     end
   end
