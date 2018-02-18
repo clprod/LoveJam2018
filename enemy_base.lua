@@ -16,6 +16,7 @@ function EnemyBase:init(game, position, width, height, defaultMaxSpeed, accelera
   self.game.world:add(self, self.position.x, self.position.y, self.width, self.height)
 
   self.isAttacking = false
+  self.attackTimerHandle = nil
   self.health = health
 end
 
@@ -28,7 +29,7 @@ end
 
 function EnemyBase:attackCristal(attackRate, attackDammage)
   self.isAttacking = true
-  Timer.after(attackRate,function()
+  self.attackTimerHandle = Timer.after(attackRate,function()
 		self.game.crystal:loseHp(attackDammage)
 		self.isAttacking = false
   end)
@@ -39,6 +40,9 @@ end
 function EnemyBase:loseHp(hpNb)
   self.health = self.health - hpNb
   if self.health <= 0 then
+    if self.attackTimerHandle ~= nil then
+      Timer.cancel(self.attackTimerHandle)
+    end
     self.game:removeEnemy(self)
     return false
   end
