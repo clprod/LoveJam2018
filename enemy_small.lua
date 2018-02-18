@@ -2,11 +2,15 @@ EnemySmall = Class{__includes = EnemyBase}
 
 EnemySmall.width, EnemySmall.height = 16, 16
 EnemySmall.defaultMaxSpeed = 40
-EnemySmall.acceleration = 800
+EnemySmall.acceleration = 200
 EnemySmall.defaultHealth = 2
 
 function EnemySmall:init(game, position)
   EnemyBase.init(self, game, position, EnemySmall.width, EnemySmall.height, EnemySmall.defaultMaxSpeed, EnemySmall.acceleration, EnemySmall.defaultHealth)
+
+  self.velocity = Vector()
+  self.knockback = Vector()
+  self.drag = 800
 end
 
 function EnemySmall:draw()
@@ -23,10 +27,12 @@ function EnemySmall:move(dt)
       -- EnemyBase just started moving
     end
 
-    self.currentSpeed = self.currentSpeed + self.acceleration * dt
-    if self.currentSpeed > self.maxSpeed then self.currentSpeed = self.maxSpeed end
+    self.velocity = self.velocity + direction * self.acceleration * dt
+    if self.velocity:len() > self.maxSpeed then self.velocity = self.velocity:normalized() * self.maxSpeed end
 
-    self.position = self.position + direction * self.currentSpeed * dt -- update position
+    self.knockback = self.knockback - self.knockback:normalized() * self.drag * dt
+
+    self.position = self.position + (self.velocity + self.knockback) * dt -- update position
     local actualX, actualY, cols, len = self.game.world:move(self, self.position.x, self.position.y)
     self.position = Vector(actualX, actualY)
 

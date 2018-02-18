@@ -34,7 +34,7 @@ function Player:init(game)
   self.attackRange = 50
   self.attackPrecision = 5
   self.attackAngle = math.rad(110)
-  self.knockback = 20
+  self.knockback = 250
 
   -- Attack visuals
   self.swordPosition = Vector()
@@ -42,7 +42,7 @@ function Player:init(game)
 
   -- Dash properties
   self.dashRange = 100
-  self.dashKnockback = 40
+  self.dashKnockback = 250
   self.dashCharge = 0
   self.dashChargeDecreaseSpeed = 5
   self.dashChargeIncreaseSpeed = 10
@@ -180,8 +180,8 @@ function Player:attack(mouseX, mouseY)
     for k,enemy in pairs(items) do
       if enemy:loseHp(1) then
         -- if enemy is not killed
-        enemy.position = enemy.position + (enemy.position - centerPos):normalized() * self.knockback
-        self.game.world:update(enemy, enemy.position.x, enemy.position.y)
+        enemy.knockback = (enemy.position - centerPos):normalized() * self.knockback
+        enemy.velocity = Vector()
       end
 
       self.dashCharge = self.dashCharge + self.dashChargeIncreaseSpeed
@@ -231,13 +231,13 @@ function Player:dash(mouseX, mouseY)
     if collision.other:loseHp(1) then
       -- Push enemies 90° or -90° from the dash
       local mult = 1
-      if math.random(0, 1) == 1 then
+      if (collision.other.position - self.position):angleTo(dashDirection) <= 0 then
         mult = -1
       end
       local normal = dashDirection:rotated(math.rad(mult * 90))
 
-      collision.other.position = collision.other.position + self.dashKnockback * normal
-      self.game.world:update(collision.other, collision.other.position.x, collision.other.position.y)
+      collision.other.knockback = self.dashKnockback * normal
+      collision.other.velocity = Vector()
     end
   end
 
