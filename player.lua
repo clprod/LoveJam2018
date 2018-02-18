@@ -10,6 +10,7 @@ Player.trailWidth = 22
 
 local dashImage = love.graphics.newImage("assets/textures/dash_trail.png")
 local swordImage = love.graphics.newImage("assets/textures/sword.png")
+local attackImage = love.graphics.newImage("assets/textures/attack_trail.png")
 
 function Player:init(game)
   self.game = game
@@ -82,7 +83,18 @@ function Player:draw()
     local centerPos = self.position + Vector(self.width/2, self.height/2)
     local pos = centerPos + self.swordPosition
     local mouseDir = (Vector(love.mouse.getX(), love.mouse.getY()) - centerPos):normalized()
-    love.graphics.draw(swordImage, pos.x, pos.y, mouseDir:angleTo(Vector(0, -1)) + self.swordRotation, 1, 1, 8/2, 50)
+    local rot = mouseDir:angleTo(Vector(0, -1)) + self.swordRotation
+    local trailRot = nil
+
+    if self.attackType == 0 then
+      trailRot = rot - math.rad(65)
+    else
+      trailRot = rot + math.rad(65)
+    end
+
+    love.graphics.draw(attackImage, pos.x, pos.y, trailRot, 1, 1, 48, 40)
+
+    love.graphics.draw(swordImage, pos.x, pos.y, rot, 1, 1, 4, 50)
   end
 
   if self.dashDrawTime > 0 then
