@@ -37,4 +37,13 @@ function TutorialGUI:draw()
   love.graphics.draw(arrow1Image, 390, 290, math.rad(-100), 1, 1, 0, 0)
 
   love.graphics.draw(arrow1Image, 130, 100, math.rad(0), -1, 1, 0, 0)
+
+  local screenshakeText = "[P] SCREENSHAKES"
+  if self.game.screenshakeActive then
+    screenshakeText = screenshakeText .. " ENABLED"
+  else
+    screenshakeText = screenshakeText .. " DISABLED"
+  end
+
+  love.graphics.printf(screenshakeText, 0, 0, 800, 'right')
 end

@@ -45,12 +45,16 @@ function Game:enter (previous)
   self.waveDisplay = WaveDisplay(self)
   self.TutorialGUI = TutorialGUI(self)
 
+  self.screenshakeActive = true
+
   self:nextWave()
 end
 
 function Game:keypressed(key, scancode, isrepeat)
   if key == "escape" then
     love.event.quit( )
+  elseif key == "p" then
+    self.screenshakeActive = not self.screenshakeActive
   end
 end
 
@@ -114,7 +118,6 @@ function Game:nextWave()
   end
 
   self:loadWave("waves/wave" .. self.currentWaveId .. ".lua")
-  print("waves/wave" .. self.currentWaveId .. ".lua")
 end
 
 function Game:loadWave(filename)
@@ -155,6 +158,8 @@ function Game:removeEnemy(enemy)
 end
 
 function Game:startScreenshake(duration, intensity, direction)
+  if not self.screenshakeActive then return end
+
   duration = duration or 0.1
   intensity = intensity or 2
 
@@ -174,6 +179,8 @@ function Game:startScreenshake(duration, intensity, direction)
 end
 
 function Game:startCameraZoom(duration, zoomLevel)
+  if not self.screenshakeActive then return end
+
   duration = duration or 0.1
   zoomLevel = zoomLevel or 1.1
 
