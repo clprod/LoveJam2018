@@ -246,7 +246,7 @@ function Player:dash(mouseX, mouseY)
   self.position = Vector(actualX, actualY)
 
   self.dashRotation = dashDirection:angleTo(Vector(0, -1))
-  self.dashPosition = self.position
+  self.dashPosition = self.position + Vector(self.width/2, self.height/2)
   self.dashDrawTime = Player.dashDrawMaxTime
 
   self.dashCharge = self.dashCharge - 30
