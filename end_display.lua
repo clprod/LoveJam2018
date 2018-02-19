@@ -14,7 +14,7 @@ function EndDisplay:show(won)
 	if won then
 		self.text = "You won !\nThanks for playing :)"
 	else
-		self.text = "You lost :(\nPress [R] to restart"
+		self.text = "Defeat :(\nPress [R] to restart"
 	end
 
 	Timer.tween(2, self, {alpha = 255}, "out-cubic")
