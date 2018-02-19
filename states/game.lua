@@ -14,7 +14,7 @@ require "end_display"
 
 Game = {}
 
-Game.waveNumber = 8
+Game.waveNumber = 9
 
 local enemyDeathSound = love.audio.newSource("assets/audio/enemy_death.wav", "static")
 
@@ -41,7 +41,7 @@ function Game:enter (previous)
 
   self.enemies = {}
 
-  self.currentWaveId = -1
+  self.currentWaveId = 7
   self.currentWaveTime = 0
   self.gameEnded = false
 
