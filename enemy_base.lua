@@ -1,5 +1,7 @@
 EnemyBase = Class{}
 
+local enemyHitSound = love.audio.newSource("assets/audio/enemy_hit.wav", "static")
+
 function EnemyBase:init(game, position, width, height, defaultMaxSpeed, acceleration, health)
   self.game = game
   self.type = 'enemy'
@@ -33,6 +35,8 @@ function EnemyBase:attackCristal(attackRate, attackDammage)
 		self.game.crystal:loseHp(attackDammage)
 		self.isAttacking = false
     self.game:startScreenshake(0.1, 2)
+    enemyHitSound:stop()
+    enemyHitSound:play()
   end)
 
 end
