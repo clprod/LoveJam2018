@@ -12,7 +12,7 @@ require "tutorial_gui"
 
 Game = {}
 
-Game.waveNumber = 2
+Game.waveNumber = 6
 
 function Game:enter (previous)
   love.mouse.setGrabbed(true)
@@ -104,11 +104,13 @@ function Game:nextWave()
 
   if self.currentWaveId >= Game.waveNumber then
     self.gameEnded = true
+    print("END")
     -- Game finished : player WON
     return
   end
 
   self:loadWave("waves/wave" .. self.currentWaveId .. ".lua")
+  print("waves/wave" .. self.currentWaveId .. ".lua")
 end
 
 function Game:loadWave(filename)
@@ -118,7 +120,7 @@ end
 
 function Game:checkEnemySpawn()
   if #self.spawn <= 0 then  -- no more enemies to spawn during the wave
-    if #self.enemies == 0 then -- And no more enemies in the game -> Start next wave
+    if #self.enemies <= 0 then -- And no more enemies in the game -> Start next wave
       self:nextWave()
     end
     return

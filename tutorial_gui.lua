@@ -15,7 +15,7 @@ end
 function TutorialGUI:update(dt)
   if self.active and self.game.currentWaveId >= 1 and not self.transitionning then
     self.transitionning = true
-    Timer.tween(1, self, {alpha = 0}, "out-cubic", function () self.active = false end)
+    Timer.tween(1, self, {alpha = 0}, "in-cubic", function () self.active = false end)
   end
 end
 
