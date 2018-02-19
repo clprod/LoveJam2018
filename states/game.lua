@@ -8,6 +8,7 @@ require "enemy_small"
 require "enemy_tutorial"
 
 require "score_display"
+require "wave_display"
 require "tutorial_gui"
 
 Game = {}
@@ -41,6 +42,7 @@ function Game:enter (previous)
   self.gameEnded = false
 
   self.scoreDisplay = ScoreDisplay(self)
+  self.waveDisplay = WaveDisplay(self)
   self.TutorialGUI = TutorialGUI(self)
 
   self:nextWave()
@@ -77,7 +79,6 @@ function Game:update(dt)
     self:checkEnemySpawn()
   end
 
-  self.scoreDisplay:update(dt)
   self.TutorialGUI:update(dt)
 end
 
@@ -96,11 +97,14 @@ function Game:draw()
   self.camera:detach()
 
   self.scoreDisplay:draw()
+  self.waveDisplay:draw()
 end
 
 function Game:nextWave()
   self.currentWaveId = self.currentWaveId + 1
   self.currentWaveTime = 0
+
+  self.waveDisplay:setWave(self.currentWaveId)
 
   if self.currentWaveId >= Game.waveNumber then
     self.gameEnded = true

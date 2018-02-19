@@ -6,9 +6,6 @@ function ScoreDisplay:init(game)
   self.multScale = 1
 end
 
-function ScoreDisplay:update(dt)
-end
-
 function ScoreDisplay:draw()
   love.graphics.setColor(0, 0, 0)
   love.graphics.printf("Score: " .. self.score, 20, 565, 300, "left", 0, self.scaleX, self.scaleY)
