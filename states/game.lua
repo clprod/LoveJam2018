@@ -16,8 +16,11 @@ Game = {}
 
 Game.waveNumber = 6
 
+local enemyDeathSound = love.audio.newSource("assets/audio/enemy_death.wav", "static")
+
 function Game:enter (previous)
   love.mouse.setGrabbed(true)
+  love.audio.setVolume(0.5)
   -- love.mouse.setCursor(love.mouse.newCursor("assets/cursor/cursor2.png", 0, 0))
 
   love.graphics.setFont(love.graphics.newFont(18))
@@ -160,6 +163,9 @@ function Game:checkEnemySpawn()
 end
 
 function Game:removeEnemy(enemy)
+  enemyDeathSound:stop()
+  enemyDeathSound:play()
+
   self.world:remove(enemy)
   for i,v in ipairs(self.enemies) do
     if v == enemy then

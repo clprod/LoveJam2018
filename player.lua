@@ -12,6 +12,8 @@ local dashImage = love.graphics.newImage("assets/textures/dash_trail.png")
 local swordImage = love.graphics.newImage("assets/textures/sword.png")
 local attackImage = love.graphics.newImage("assets/textures/attack_trail.png")
 
+local attackSound = love.audio.newSource("assets/audio/attack.wav", "static")
+
 function Player:init(game)
   self.game = game
   self.type = 'player'
@@ -210,6 +212,11 @@ function Player:attack(mouseX, mouseY)
   end
   self.swordRotation = swordDir:angleTo(mouseDir)
   self.swordPosition = swordDir * 8
+
+  local pitch = math.random(0, 20) - 10
+  attackSound:setPitch(1 + pitch/100)
+  attackSound:stop()
+  attackSound:play()
 
   self.game:startScreenshake(0.2, 4, mouseDir)
   self.game:startCameraZoom(0.2, 1.05)
