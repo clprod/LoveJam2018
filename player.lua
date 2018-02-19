@@ -44,7 +44,7 @@ function Player:init(game)
   self.dashRange = 100
   self.dashKnockback = 250
   self.dashCharge = 0
-  self.dashChargeDecreaseSpeed = 5
+  self.dashChargeDecreaseSpeed = 10
   self.dashChargeIncreaseSpeed = 10
 
   -- Dash visuals
@@ -74,7 +74,7 @@ function Player:update(dt)
 end
 
 function Player:draw()
-  love.graphics.setColor(0, 0, 0)
+  love.graphics.setColor(self.dashCharge * 255 / 100, 0, 0)
   love.graphics.rectangle("line", self.position.x, self.position.y, self.width, self.height)
 
   love.graphics.setColor(255, 255, 255)
@@ -174,6 +174,8 @@ function Player:attack(mouseX, mouseY)
   local centerPos = self.position + Vector(self.width/2, self.height/2)
   local v = (Vector(mouseX, mouseY) - centerPos):normalized():rotated(-self.attackAngle/2)
 
+  local score = 0
+
   for i=1,self.attackPrecision do
     -- Raycast
     local endRay = centerPos + v * self.attackRange
@@ -183,6 +185,8 @@ function Player:attack(mouseX, mouseY)
         -- if enemy is not killed
         enemy.knockback = (enemy.position - centerPos):normalized() * self.knockback
         enemy.velocity = Vector()
+      else
+        score = score + 10
       end
 
       self.dashCharge = self.dashCharge + self.dashChargeIncreaseSpeed
@@ -205,6 +209,8 @@ function Player:attack(mouseX, mouseY)
 
   self.game:startScreenshake(0.2, 4, mouseDir)
   self.game:startCameraZoom(0.2, 1.05)
+
+  self.game.scoreDisplay:increaseScore(score)
 end
 
 function Player:dash(mouseX, mouseY)

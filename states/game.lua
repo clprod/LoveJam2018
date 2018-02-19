@@ -6,6 +6,8 @@ require "player"
 require "enemy_base"
 require "enemy_small"
 
+require "score_display"
+
 Game = {}
 
 Game.waveNumber = 2
@@ -13,6 +15,8 @@ Game.waveNumber = 2
 function Game:enter (previous)
   love.mouse.setGrabbed(true)
   love.mouse.setCursor(love.mouse.newCursor("assets/cursor/cursor2.png", 0, 0))
+
+  love.graphics.setFont(love.graphics.newFont(18))
 
   self.world = bump.newWorld()
 
@@ -33,6 +37,8 @@ function Game:enter (previous)
   self.currentWaveId = -1
   self.currentWaveTime = 0
   self.gameEnded = false
+
+  self.scoreDisplay = ScoreDisplay()
 
   self:nextWave()
 end
@@ -67,6 +73,8 @@ function Game:update(dt)
     self.currentWaveTime = self.currentWaveTime + dt
     self:checkEnemySpawn()
   end
+
+  self.scoreDisplay:update(dt)
 end
 
 function Game:draw()
@@ -80,6 +88,8 @@ function Game:draw()
   end
 
   self.camera:detach()
+
+  self.scoreDisplay:draw()
 end
 
 function Game:nextWave()
