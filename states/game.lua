@@ -14,7 +14,7 @@ require "end_display"
 
 Game = {}
 
-Game.waveNumber = 6
+Game.waveNumber = 8
 
 local enemyDeathSound = love.audio.newSource("assets/audio/enemy_death.wav", "static")
 
