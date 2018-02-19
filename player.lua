@@ -58,6 +58,10 @@ end
 function Player:update(dt)
   self:move(dt)
 
+  local scoreMult = 1
+  if self.dashCharge > 80 then scoreMult = 2 end
+  self.game.scoreDisplay:setMult(scoreMult)
+
   -- Attack update
   if self.attacking then
     self.currentAttackTime = self.currentAttackTime + dt
@@ -210,12 +214,12 @@ function Player:attack(mouseX, mouseY)
   self.game:startScreenshake(0.2, 4, mouseDir)
   self.game:startCameraZoom(0.2, 1.05)
 
-  self.game.scoreDisplay:increaseScore(score)
+  self.game.scoreDisplay:increaseScore(score, scoreMult)
 end
 
 function Player:dash(mouseX, mouseY)
   -- Can't dash if less than 90% charge
-  if self.dashCharge < 60 then
+  if self.dashCharge < 80 then
     return
   end
 
@@ -255,7 +259,7 @@ function Player:dash(mouseX, mouseY)
   self.dashPosition = self.position + Vector(self.width/2, self.height/2)
   self.dashDrawTime = Player.dashDrawMaxTime
 
-  self.dashCharge = self.dashCharge - 30
+  self.dashCharge = self.dashCharge - 0
 
   self.game:startScreenshake(0.5, 5, dashDirection)
   self.game:startCameraZoom(0.5, 1.05)

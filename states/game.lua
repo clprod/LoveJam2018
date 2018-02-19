@@ -14,7 +14,7 @@ Game.waveNumber = 2
 
 function Game:enter (previous)
   love.mouse.setGrabbed(true)
-  love.mouse.setCursor(love.mouse.newCursor("assets/cursor/cursor2.png", 0, 0))
+  -- love.mouse.setCursor(love.mouse.newCursor("assets/cursor/cursor2.png", 0, 0))
 
   love.graphics.setFont(love.graphics.newFont(18))
 
