@@ -25,7 +25,7 @@ function Game:enter (previous)
   self.world = bump.newWorld()
 
   -- Game borders
-  local screenWidth, screenHeight, borderSize = love.graphics.getWidth(), love.graphics.getHeight(), 10
+  local screenWidth, screenHeight, borderSize = love.graphics.getWidth(), love.graphics.getHeight(), 50
   self.world:add({type = "border"}, 0, -borderSize, screenWidth, borderSize)
   self.world:add({type = "border"}, -borderSize, 0, borderSize, screenHeight)
   self.world:add({type = "border"}, screenWidth, 0, borderSize, screenHeight)

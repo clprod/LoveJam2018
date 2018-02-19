@@ -214,7 +214,7 @@ function Player:attack(mouseX, mouseY)
   self.game:startScreenshake(0.2, 4, mouseDir)
   self.game:startCameraZoom(0.2, 1.05)
 
-  self.game.scoreDisplay:increaseScore(score, scoreMult)
+  self.game.scoreDisplay:increaseScore(score)
 end
 
 function Player:dash(mouseX, mouseY)
@@ -236,6 +236,7 @@ function Player:dash(mouseX, mouseY)
   end
 
   local actualX, actualY, cols, len = self.game.world:move(self, goalPos.x, goalPos.y, playerDashFilter)
+  local score = 0
 
   for k,collision in pairs(cols) do
     if collision.other.type ~= 'enemy' then break end
@@ -250,6 +251,8 @@ function Player:dash(mouseX, mouseY)
 
       collision.other.knockback = self.dashKnockback * normal
       collision.other.velocity = Vector()
+    else
+      score = score + 20
     end
   end
 
@@ -263,4 +266,6 @@ function Player:dash(mouseX, mouseY)
 
   self.game:startScreenshake(0.5, 5, dashDirection)
   self.game:startCameraZoom(0.5, 1.05)
+
+  self.game.scoreDisplay:increaseScore(score)
 end
