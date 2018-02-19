@@ -29,6 +29,7 @@ end
 
 function Crystal:loseHp(hpNb)
   self.hp = self.hp - hpNb
+  if self.hp < 0 then self.hp = 0 end
   if self.hp == 0 then
     self.game:gameOver()
   end
