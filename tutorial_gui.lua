@@ -24,8 +24,8 @@ function TutorialGUI:draw()
 
   love.graphics.setColor(0, 0, 0, self.alpha)
 
-  love.graphics.printf("PROTECT !", 100, 200, 700, 'center', math.rad(5))
-  love.graphics.printf("KILL TO START !", 0, 150, 200, 'center', math.rad(-5))
+  love.graphics.printf("PROTECT !", 100, 180, 700, 'center', math.rad(5))
+  love.graphics.printf("KILL TO START !", 20, 170, 200, 'center', math.rad(-5))
 
   love.graphics.draw(keysImage, 225, 425, 0, 1, 1)
   love.graphics.printf("MOVE", 225, 515, 126, 'center')
@@ -34,7 +34,7 @@ function TutorialGUI:draw()
   love.graphics.printf("ATTACK", 440, 425, 100, 'center')
   love.graphics.printf("DASH", 540, 425, 100, 'center')
 
-  love.graphics.draw(arrow1Image, 390, 310, math.rad(-100), 1, 1, 0, 0)
+  love.graphics.draw(arrow1Image, 390, 290, math.rad(-100), 1, 1, 0, 0)
 
-  love.graphics.draw(arrow1Image, 110, 80, math.rad(0), -1, 1, 0, 0)
+  love.graphics.draw(arrow1Image, 130, 100, math.rad(0), -1, 1, 0, 0)
 end

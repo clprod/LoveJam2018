@@ -5,6 +5,7 @@ require "player"
 
 require "enemy_base"
 require "enemy_small"
+require "enemy_tutorial"
 
 require "score_display"
 require "tutorial_gui"
@@ -128,8 +129,8 @@ function Game:checkEnemySpawn()
     for i=1,spawn.number do
       if spawn.type == 0 then
         table.insert(self.enemies, EnemySmall(self, spawn.pos))
-      else
-        -- Other enemy types
+      elseif spawn.type == 1 then
+        table.insert(self.enemies, EnemyTutorial(self, spawn.pos))
       end
     end
 
