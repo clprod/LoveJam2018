@@ -5,8 +5,10 @@ require "player"
 
 require "enemy_base"
 require "enemy_small"
+require "enemy_tutorial"
 
 require "score_display"
+require "tutorial_gui"
 
 Game = {}
 
@@ -38,7 +40,8 @@ function Game:enter (previous)
   self.currentWaveTime = 0
   self.gameEnded = false
 
-  self.scoreDisplay = ScoreDisplay()
+  self.scoreDisplay = ScoreDisplay(self)
+  self.TutorialGUI = TutorialGUI(self)
 
   self:nextWave()
 end
@@ -75,10 +78,13 @@ function Game:update(dt)
   end
 
   self.scoreDisplay:update(dt)
+  self.TutorialGUI:update(dt)
 end
 
 function Game:draw()
   self.camera:attach()
+
+  self.TutorialGUI:draw()
 
   self.crystal:draw()
   self.player:draw()
@@ -123,8 +129,8 @@ function Game:checkEnemySpawn()
     for i=1,spawn.number do
       if spawn.type == 0 then
         table.insert(self.enemies, EnemySmall(self, spawn.pos))
-      else
-        -- Other enemy types
+      elseif spawn.type == 1 then
+        table.insert(self.enemies, EnemyTutorial(self, spawn.pos))
       end
     end
 
