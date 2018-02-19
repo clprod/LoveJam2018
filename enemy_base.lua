@@ -32,6 +32,7 @@ function EnemyBase:attackCristal(attackRate, attackDammage)
   self.attackTimerHandle = Timer.after(attackRate,function()
 		self.game.crystal:loseHp(attackDammage)
 		self.isAttacking = false
+    self.game:startScreenshake(0.1, 2)
   end)
 
 end
