@@ -7,6 +7,7 @@ require "enemy_base"
 require "enemy_small"
 
 require "score_display"
+require "tutorial_gui"
 
 Game = {}
 
@@ -38,7 +39,8 @@ function Game:enter (previous)
   self.currentWaveTime = 0
   self.gameEnded = false
 
-  self.scoreDisplay = ScoreDisplay()
+  self.scoreDisplay = ScoreDisplay(self)
+  self.TutorialGUI = TutorialGUI(self)
 
   self:nextWave()
 end
@@ -75,10 +77,13 @@ function Game:update(dt)
   end
 
   self.scoreDisplay:update(dt)
+  self.TutorialGUI:update(dt)
 end
 
 function Game:draw()
   self.camera:attach()
+
+  self.TutorialGUI:draw()
 
   self.crystal:draw()
   self.player:draw()
