@@ -10,7 +10,7 @@ require "enemy_tutorial"
 require "score_display"
 require "wave_display"
 require "tutorial_gui"
-require "win_display"
+require "end_display"
 
 Game = {}
 
@@ -46,7 +46,7 @@ function Game:enter (previous)
   self.waveDisplay = WaveDisplay(self)
   self.TutorialGUI = TutorialGUI(self)
 
-  self.winDisplay = WinDisplay(self)
+  self.endDisplay = EndDisplay(self)
 
   self.screenshakeActive = true
 
@@ -58,6 +58,8 @@ function Game:keypressed(key, scancode, isrepeat)
     love.event.quit( )
   elseif key == "p" then
     self.screenshakeActive = not self.screenshakeActive
+  elseif key == "r" then
+    GameState.switch(Game)
   end
 end
 
@@ -107,7 +109,7 @@ function Game:draw()
   self.waveDisplay:draw()
 
   if self.gameEnded then
-    self.winDisplay:draw()
+    self.endDisplay:draw()
   end
 end
 
@@ -120,7 +122,7 @@ function Game:nextWave()
   if self.currentWaveId >= Game.waveNumber then
     -- Game finished : player WON
     self.gameEnded = true
-    self.winDisplay:show()
+    self.endDisplay:show(true)
 
     self.player.dashChargeDecreaseSpeed = 0
     self.player.dashCharge = 100
@@ -199,5 +201,10 @@ function Game:startCameraZoom(duration, zoomLevel)
 end
 
 function Game:gameOver()
-  love.event.quit( )
+  for i=1,#self.enemies do
+    table.remove(self.enemies, 1)
+  end
+
+  self.gameEnded = true
+  self.endDisplay:show(false)
 end
