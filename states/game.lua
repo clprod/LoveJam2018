@@ -10,6 +10,7 @@ require "enemy_tutorial"
 require "score_display"
 require "wave_display"
 require "tutorial_gui"
+require "win_display"
 
 Game = {}
 
@@ -44,6 +45,8 @@ function Game:enter (previous)
   self.scoreDisplay = ScoreDisplay(self)
   self.waveDisplay = WaveDisplay(self)
   self.TutorialGUI = TutorialGUI(self)
+
+  self.winDisplay = WinDisplay(self)
 
   self.screenshakeActive = true
 
@@ -102,6 +105,10 @@ function Game:draw()
 
   self.scoreDisplay:draw()
   self.waveDisplay:draw()
+
+  if self.gameEnded then
+    self.winDisplay:draw()
+  end
 end
 
 function Game:nextWave()
@@ -111,9 +118,12 @@ function Game:nextWave()
   self.waveDisplay:setWave(self.currentWaveId)
 
   if self.currentWaveId >= Game.waveNumber then
-    self.gameEnded = true
-    print("END")
     -- Game finished : player WON
+    self.gameEnded = true
+    self.winDisplay:show()
+
+    self.player.dashChargeDecreaseSpeed = 0
+    self.player.dashCharge = 100
     return
   end
 
