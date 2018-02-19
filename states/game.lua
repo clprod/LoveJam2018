@@ -41,7 +41,7 @@ function Game:enter (previous)
 
   self.enemies = {}
 
-  self.currentWaveId = 7
+  self.currentWaveId = -1
   self.currentWaveTime = 0
   self.gameEnded = false
 
